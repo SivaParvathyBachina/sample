@@ -6,21 +6,22 @@
 #include  <sys/types.h>
 #include  <sys/ipc.h>
 #include  <sys/shm.h>
-
+#include <signal.h>
 #include "shared_mem.h"
 
 #define SHMSIZE 100
 
 void create_child_processes(int);
+void signalHandler(int);
 
 pid_t childpid = 0;
-int i, n,x,k,s;
+int i, n,x,k,s, status;
 //opterr = 0;
 
-char *i_val, *shmid_val;
 key_t myshmKey;
 int shmId;
-shared_mem *shmPtr;
+shared_mem *shmPtr;     
+
 
 int main (int argc, char *argv[]) {
 
@@ -46,6 +47,13 @@ case '?':
         return 1;
 }
 
+//struct sigaction psa;
+//psa.sa_handler = signalHandler;
+//signal(SIGINT, signalHandler);
+//sigaction(SIGINT, &psa, NULL);
+//alarm(2);
+
+
 myshmKey = ftok(".", 'c');
 shmId = shmget(myshmKey, sizeof(shared_mem), IPC_CREAT | 0666);
 
@@ -56,7 +64,7 @@ if(shmId <0 )
 }
 
 shmPtr = (shared_mem*) shmat(shmId, NULL, 0);
-fprintf(stderr, "Shared Memory id in master %d \n", shmId);
+//fprintf(stderr, "Shared Memory id in master %d \n", shmId);
 
 
 if(shmPtr == (void *) -1)
@@ -65,22 +73,23 @@ if(shmPtr == (void *) -1)
 	exit(1);
 }
 
-fprintf(stderr, "Allocated shared memory \n");
+//fprintf(stderr, "Allocated shared memory \n");
 
-shmPtr -> seconds = 20;
+shmPtr -> seconds = 0;
 
 //fprintf(stderr, "After seconds \n");
-shmPtr -> nanoseconds = 30;
+shmPtr -> milliseconds = 0;
 
-fprintf(stderr, "%d, %d \n" ,shmPtr -> seconds, shmPtr -> nanoseconds);
+//fprintf(stderr, "%d, %d \n" ,shmPtr -> seconds, shmPtr -> milliseconds);
 
-create_child_processes(s);
+create_child_processes(n);
 
+//fprintf(stderr, "Master executed succesfully");
 
-shmdt((void *)shmPtr);
-fprintf(stderr, "Server has detached its shared memory \n");
-shmctl(shmId, IPC_RMID, NULL);
-fprintf(stderr, "Server has removed its shared memory \n");
+//shmdt((void *)shmPtr);
+//fprintf(stderr, "Server has detached its shared memory \n");
+//shmctl(shmId, IPC_RMID, NULL);
+//fprintf(stderr, "Server has removed its shared memory \n");
 
 
 
@@ -90,39 +99,77 @@ return 0;
 
 void create_child_processes(int childCount)
 {
-	for(i=0; i<childCount ;i++)
+
+	//fprintf(stderr, "%d Children to be spawn \n", childCount);
+	//fprintf(stderr, " s count here %d \n ", s);
+	pid_t pids[childCount];
+	int kval = childCount;
+	int j;
+	while(j< childCount)	
 	{
-		fprintf(stderr, "Starting child forking for child %d \n" ,i);
-		childpid = fork();
+	//fprintf(stderr, "J entered %d \n", j-s);
+	for(i=0; i<s ;i++)
+	{
+		if(j == childCount)
+		break;
+		//fprintf(stderr, "Starting child forking for child %d \n" ,i);
+		pids[i] = fork();
 		if(childpid < 0)
 		perror("Error in forking");
 		
-		if(childpid == 0)
+		if(pids[i] == 0)
 		{
-		fprintf(stderr, "Shared Memory id in create_child_processes %d \n", shmId);
-		fprintf(stderr, "Child Forked %d \n" , i);
-		char command1[50], command2[50]; // Added
+		//fprintf(stderr, "Shared Memory id in create_child_processes %d \n", shmId);
+		fprintf(stderr, "Child Forked %d \n" , j);
+		char command1[50], command2[50], command3[50]; // Added
 		char *i_val = "-i";
 		char *s_val = "-s";
+		char *k_val = "-n";
 		char *i = i;
+		//char *n = n;
 		char *shmid;
-	//	strcpy(shmid, "%d", shmId);
-		//strcat(i, i_val);
-                //sprintf(shmid,"%s", s_val);
-		char *temp[] = {NULL,i_val,command1,s_val, command2, NULL}; // Modified
+		// fprintf(stderr, " n count here %d \n ", *n);
+		char *temp[] = {NULL,i_val,command1,k_val,command2 ,s_val, command3, NULL}; // Modified
 		temp[0]="./worker";
-		//strcat(i, i_val);
-		//sprintf(shmid,"%s", s_val);
-		//sprintf(temp[1],"%s","-i"); // remove *
-		sprintf(temp[2],"%d", i); // remove *
-		//sprintf(temp[3], "%s", "-s"); 
-		sprintf(temp[4], "%d", shmId);
-		//fprintf(stderr, "%s \n" , i_val);
-		//fprintf(stderr, "%s \n", s_val);
-		//fprintf(stderr, "Just before the exec call \n");
+		sprintf(temp[2],"%d", i);
+		sprintf(temp[4], "%d", n);
+		sprintf(temp[6], "%d", shmId);
 		execv("./worker", temp);
 		fprintf(stderr, "Error in exec");
 		}
-		
+
+		fprintf(stderr, "After Update Of Shared Memory %d, %d \n", shmPtr -> seconds, shmPtr -> milliseconds);
+		/*else
+		{
+		waitpid(pids[i], &status, 0);
+		fprintf(stderr, "waiting for child %ld to get finished in master \n", pids[i]);
+		} */
+	j++;
 	}
+	//for(i=0; i<s; i++) 
+             //{
+                waitpid(-1, &status, 0);
+		sleep(2);
+                //fprintf(stderr, "waiting for child %ld to get finished in master \n", pids[i]);
+            // }		
+	if(i >= s)
+	{
+		fprintf(stderr, "S is done these many times \n");
+		i = 0;	
+	}
+	}
+fprintf(stderr, "Master executed succesfully \n");
+
 }
+
+
+void signalHandler(int signalValue)
+{
+	//signal(SIGINT, SIG_IGN);
+	//signal(SIGALRM, SIG_IGN);
+	if(signalValue == SIGALRM)
+	fprintf(stderr, "Signal Caught \n");
+
+	if(signalValue == SIGINT)
+	fprintf(stderr, "Received Ctrl + C signal");
+} 

@@ -4,7 +4,7 @@
 typedef struct
 {
 	long seconds;
-	long nanoseconds;
+	long milliseconds;
 }shared_mem;
 
 #endif
