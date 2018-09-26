@@ -24,18 +24,19 @@ int main (int argc, char *argv[]) {
 
 //int i;
 //for(i=0;i<argc;i++) 
- //      fprintf(stderr, "\nargv[%d]: %s",i,argv[i]); 
+ //     fprintf(stderr, "\nargv[%d]: %s",i,argv[i]); 
 
 childpid = getpid();
-fprintf(stderr, "Child From worker Id %ld \n", childpid);
+fprintf(stderr, "Child started execution in  worker::: %ld \n", childpid);
+fprintf(stderr, "*******************************************\n");
 
-while((x = getopt(argc,argv, "i:n:s:")) != -1)
+while((x = getopt(argc,argv, "n:s:")) != -1)
 switch(x)
 {
-case 'i':
-       // fprintf(stderr, "Procees Number  \n");
-	processNumber = atoi(optarg);
-        break;
+//case 'i':
+  ;     // fprintf(stderr, "Procees Number  \n");
+//	processNumber = atoi(optarg);
+   //     break;
 
 case 'n': 
 	n = atoi(optarg);
@@ -50,7 +51,7 @@ case '?':
 }
 
 //fprintf(stderr," Shared Memory Id in worker %d \n", shmId);
-alarm(2);
+//alarm(2);
 //signal(SIGINT, signalHandler);
 
 
@@ -65,32 +66,37 @@ if(shmPtr == (void *) -1)
 //fprintf(stderr, "K value %d \n", n);
 //fprintf(stderr, "Allocated shared memory in worker \n");
 
-int j,seconds = 0, milliseconds = 0; 
+int j;
+//seconds = shmPtr -> seconds, milliseconds = shmPtr -> milliseconds; 
 
 int loopCount = n*MILLION;
 
 for(j=0; j< loopCount; j++)
 {
-	if(milliseconds == 999)
+	if(shmPtr -> milliseconds >= 999)
 	{
-		seconds = seconds + 1;
-		milliseconds = 0;
+		shmPtr -> seconds  = shmPtr -> seconds  + 1;
+		shmPtr -> milliseconds = 0;
 	}
-	milliseconds++;
+	shmPtr -> milliseconds++;
 }
 
-shmPtr -> seconds = seconds;
-shmPtr -> milliseconds = milliseconds;
+//shmPtr -> seconds = seconds;
+//shmPtr -> milliseconds = milliseconds;
 
-fprintf(stderr, "After Update in worker  ");
-fprintf(stderr, "%d, %d \n" ,shmPtr -> seconds, shmPtr -> milliseconds);
+fprintf(stderr, "Worker Clock Update ");
+fprintf(stderr, " Seconds %d, Milliseconds %d \n" ,shmPtr -> seconds, shmPtr -> milliseconds);
 
 //fprintf(stderr, "Killing child with %ld \n", childpid);
 
 
 //kill(childpid, SIGINT);
-fprintf(stderr, "Child Exiting from worker with %ld \n", childpid);
+fprintf(stderr, "Child Done Execution from worker with %ld \n", childpid);
+fprintf(stderr, "=========================================== \n");
 
+//shmdt((void *)shmPtr);
+//shmctl(shmId, IPC_RMID, NULL);
+//fprintf(stderr, "Clear Shared Memory \n");
 return 0;
 }
 
