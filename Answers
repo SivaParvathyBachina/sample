@@ -1,0 +1,314 @@
+bachina@hoare7 bachina.2]$ ./master -n 5 -s 1
+Child Forked 0
+Child started execution in  worker::: 2498
+*******************************************
+Worker Clock Update  Seconds 5005, Milliseconds 5
+Child Done Execution from worker with 2498
+===========================================
+Child Forked 1
+Child Forked 2
+Child started execution in  worker::: 2499
+*******************************************
+Worker Clock Update  Seconds 10010, Milliseconds 10
+Child Done Execution from worker with 2499
+===========================================
+Child Forked 3
+Child started execution in  worker::: 2500
+*******************************************
+Worker Clock Update  Seconds 15015, Milliseconds 15
+Child Done Execution from worker with 2500
+===========================================
+Child Forked 4
+Child started execution in  worker::: 2501
+*******************************************
+Worker Clock Update  Seconds 20020, Milliseconds 20
+Child Done Execution from worker with 2501
+===========================================
+Child started execution in  worker::: 2502
+*******************************************
+Worker Clock Update  Seconds 25025, Milliseconds 25
+Child Done Execution from worker with 2502
+===========================================
+Master Clock Value Seconds 25025, Milliseconds 25
+Server has detached its shared memory
+Server has removed its shared memory
+
+=============================================================
+
+[bachina@hoare7 bachina.2]$ ./master -n 5 -s 3
+Child Forked 0
+Child Forked 1
+Child Forked 2
+Child started execution in  worker::: 2597
+*******************************************
+Child started execution in  worker::: 2596
+*******************************************
+Child started execution in  worker::: 2598
+*******************************************
+Worker Clock Update  Seconds 12337, Milliseconds 576
+Child Done Execution from worker with 2596
+===========================================
+Child Forked 3
+Worker Clock Update  Seconds 13285, Milliseconds 56
+Child Done Execution from worker with 2597
+===========================================
+Child Forked 4
+Child started execution in  worker::: 2599
+*******************************************
+Worker Clock Update  Seconds 15979, Milliseconds 131
+Child Done Execution from worker with 2598
+===========================================
+Child started execution in  worker::: 2600
+*******************************************
+Worker Clock Update  Seconds 22312, Milliseconds 536
+Child Done Execution from worker with 2599
+===========================================
+Worker Clock Update  Seconds 24562, Milliseconds 319
+Child Done Execution from worker with 2600
+===========================================
+Master Clock Value Seconds 24562, Milliseconds 319
+Server has detached its shared memory
+Server has removed its shared memory
+[bachina@hoare7 bachina.2]$
+
+
+
+=====================================================================
+
+
+[bachina@hoare7 bachina.2]$ ./master -n 5 -s 5
+Child Forked 0
+Child Forked 1
+Child Forked 2
+Child Forked 3
+Child Forked 4
+Child started execution in  worker::: 2658
+*******************************************
+Child started execution in  worker::: 2659
+*******************************************
+Child started execution in  worker::: 2662
+*******************************************
+Child started execution in  worker::: 2660
+*******************************************
+Child started execution in  worker::: 2661
+*******************************************
+Worker Clock Update Worker Clock Update  Seconds 18154, Milliseconds 817
+ Seconds 18156, Milliseconds 342
+Child Done Execution from worker with 2658
+Child Done Execution from worker with 2662
+===========================================
+===========================================
+Worker Clock Update  Seconds 18686, Milliseconds 814
+Child Done Execution from worker with 2660
+===========================================
+Worker Clock Update  Seconds 23860, Milliseconds 488
+Child Done Execution from worker with 2659
+===========================================
+Worker Clock Update  Seconds 23900, Milliseconds 601
+Child Done Execution from worker with 2661
+===========================================
+Master Clock Value Seconds 23900, Milliseconds 601
+Server has detached its shared memory
+Server has removed its shared memory
+[bachina@hoare7 bachina.2]$
+
+
+
+======================================================================
+
+
+For Ctrl + C signal the output is 
+
+
+
+[bachina@hoare7 bachina.2]$ ./master -n 10 -s 1
+Child Forked 0
+Child started execution in  worker::: 2771
+*******************************************
+Worker Clock Update  Seconds 10010, Milliseconds 10
+Child Done Execution from worker with 2771
+===========================================
+Child Forked 1
+Child Forked 2
+Child started execution in  worker::: 2772
+*******************************************
+Worker Clock Update  Seconds 20020, Milliseconds 20
+Child Done Execution from worker with 2772
+===========================================
+Child Forked 3
+Child started execution in  worker::: 2774
+*******************************************
+Worker Clock Update  Seconds 30030, Milliseconds 30
+Child Done Execution from worker with 2774
+===========================================
+Child Forked 4
+Child started execution in  worker::: 2775
+*******************************************
+^CCaught Ctrl + C Signal
+Killing the existing slaves in the system
+Killing child with Id 2771
+Killing child with Id 2772
+Killing child with Id 2774
+Killing child with Id 2775
+Master Clock Value Seconds 38492, Milliseconds 508
+Master started detaching its shared memory
+Master removed shared memory
+[bachina@hoare7 bachina.2]$
+
+
+======================================================================
+
+For n over 20 :
+[bachina@hoare7 bachina.2]$ ./master -n 25 -s 1
+There can only be a maximum of 20 processesin the system
+Setting back n to 20
+Child Forked 0
+Child started execution in  worker::: 2880
+*******************************************
+Worker Clock Update  Seconds 20020, Milliseconds 20
+Child Done Execution from worker with 2880
+===========================================
+Child Forked 1
+Child Forked 2
+Child started execution in  worker::: 2881
+*******************************************
+Worker Clock Update  Seconds 40040, Milliseconds 40
+Child Done Execution from worker with 2881
+===========================================
+Child Forked 3
+Child started execution in  worker::: 2883
+*******************************************
+Worker Clock Update  Seconds 60060, Milliseconds 60
+Child Done Execution from worker with 2883
+===========================================
+Child Forked 4
+Child started execution in  worker::: 2884
+*******************************************
+Worker Clock Update  Seconds 80080, Milliseconds 80
+Child Done Execution from worker with 2884
+===========================================
+Child Forked 5
+Child started execution in  worker::: 2885
+*******************************************
+Worker Clock Update  Seconds 100100, Milliseconds 100
+Child Done Execution from worker with 2885
+===========================================
+Child Forked 6
+Child started execution in  worker::: 2886
+*******************************************
+Worker Clock Update  Seconds 120120, Milliseconds 120
+Child Done Execution from worker with 2886
+===========================================
+Child Forked 7
+Child started execution in  worker::: 2887
+*******************************************
+Worker Clock Update  Seconds 140140, Milliseconds 140
+Child Done Execution from worker with 2887
+===========================================
+Child Forked 8
+Child started execution in  worker::: 2888
+*******************************************
+Worker Clock Update  Seconds 160160, Milliseconds 160
+Child Done Execution from worker with 2888
+===========================================
+Child Forked 9
+Child started execution in  worker::: 2889
+*******************************************
+Worker Clock Update  Seconds 180180, Milliseconds 180
+Child Done Execution from worker with 2889
+===========================================
+Child Forked 10
+Child started execution in  worker::: 2890
+*******************************************
+Worker Clock Update  Seconds 200200, Milliseconds 200
+Child Done Execution from worker with 2890
+===========================================
+Child Forked 11
+Child started execution in  worker::: 2891
+*******************************************
+Worker Clock Update  Seconds 220220, Milliseconds 220
+Child Done Execution from worker with 2891
+===========================================
+Child Forked 12
+Child started execution in  worker::: 2892
+*******************************************
+Worker Clock Update  Seconds 240240, Milliseconds 240
+Child Done Execution from worker with 2892
+===========================================
+Child Forked 13
+Child started execution in  worker::: 2893
+*******************************************
+Worker Clock Update  Seconds 260260, Milliseconds 260
+Child Done Execution from worker with 2893
+===========================================
+Child Forked 14
+Child started execution in  worker::: 2894
+*******************************************
+Worker Clock Update  Seconds 280280, Milliseconds 280
+Child Done Execution from worker with 2894
+===========================================
+Child Forked 15
+Child started execution in  worker::: 2895
+*******************************************
+Worker Clock Update  Seconds 300300, Milliseconds 300
+Child Done Execution from worker with 2895
+===========================================
+Child Forked 16
+Child started execution in  worker::: 2896
+*******************************************
+Worker Clock Update  Seconds 320320, Milliseconds 320
+Child Done Execution from worker with 2896
+===========================================
+Child Forked 17
+Child started execution in  worker::: 2897
+*******************************************
+Worker Clock Update  Seconds 340340, Milliseconds 340
+Child Done Execution from worker with 2897
+===========================================
+Child Forked 18
+Child started execution in  worker::: 2899
+*******************************************
+Worker Clock Update  Seconds 360360, Milliseconds 360
+Child Done Execution from worker with 2899
+===========================================
+Child Forked 19
+Child started execution in  worker::: 2900
+*******************************************
+Worker Clock Update  Seconds 380380, Milliseconds 380
+Child Done Execution from worker with 2900
+===========================================
+Child started execution in  worker::: 2901
+*******************************************
+Worker Clock Update  Seconds 400400, Milliseconds 400
+Child Done Execution from worker with 2901
+===========================================
+Master Clock Value Seconds 400400, Milliseconds 400
+Server has detached its shared memory
+Server has removed its shared memory
+
+========================================================================
+For Alarm Expiration the output is 
+
+[bachina@hoare7 bachina.2]$ ./master -n 10 -s 1
+Child Forked 0
+Child started execution in  worker::: 3034
+*******************************************
+Worker Clock Update  Seconds 10010, Milliseconds 10
+Child Done Execution from worker with 3034
+===========================================
+Child Forked 1
+Child started execution in  worker::: 3036
+*******************************************
+Worker Clock Update  Seconds 20020, Milliseconds 20
+Child Done Execution from worker with 3036
+===========================================
+Master Time Done
+Master Clock Value Seconds 20020, Milliseconds 20
+Master started detaching its shared memory
+Master removed shared memory
+[bachina@hoare7 bachina.2]$
+
+
+
+
+

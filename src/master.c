@@ -15,68 +15,51 @@
 
 pid_t childpid = 0;
 int i,k, n,x,k,s,j,status;
-pid_t *pids;
+pid_t *child_pids;
 key_t myshmKey;
 int shmId;
-shared_mem *shmPtr;     
+shared_mem *clock;     
 
-void myhandler(int s) {
-
-if(s == SIGALRM)
-{
-fprintf(stderr, "Master Time Done\n");
-fprintf(stderr, "Master Clock Value Seconds %d, Milliseconds %d \n", shmPtr -> seconds, shmPtr -> milliseconds);
-shmdt((void *)shmPtr);
+void clearSharedMemory() {
+fprintf(stderr, "Master Clock Value Seconds %d, Milliseconds %d \n", clock -> seconds, clock -> milliseconds);
+shmdt((void *)clock);
 fprintf(stderr, "Master started detaching its shared memory \n");
 shmctl(shmId, IPC_RMID, NULL);
 fprintf(stderr, "Master removed shared memory \n");
+}
+
+void killExistingChildren(){
+
+for(k=0; k<n; k++)
+{
+if(child_pids[k] != 0)
+{
+fprintf(stderr, "Killing child with Id %d \n", child_pids[k]);
+kill(child_pids[k], SIGTERM);
+}
+}
+
+}
+
+
+
+void myhandler(int s) {
+if(s == SIGALRM)
+{
+fprintf(stderr, "Master Time Done\n");
+killExistingChildren();
+clearSharedMemory();
 }
 
 if(s == SIGINT)
 {
 fprintf(stderr, "Caught Ctrl + C Signal \n");
-fprintf(stderr, "Killing the existing slaves in the system \n");
-for(k=0; k<n; k++)
-{
-if(pids[k] != 0)
-{
-fprintf(stderr, "Killing child with Id %d \n", pids[k]);
-kill(pids[k], SIGTERM);
-}
-}
-fprintf(stderr, "Master Clock Value Seconds %d, Milliseconds %d \n", shmPtr -> seconds, shmPtr -> milliseconds);
-shmdt((void *)shmPtr);
-fprintf(stderr, "Master started detaching its shared memory \n");
-shmctl(shmId, IPC_RMID, NULL);
-fprintf(stderr, "Master removed shared memory \n");
+fprintf(stderr, "Killing the Existing Children in the system \n");
+killExistingChildren();
+clearSharedMemory();
 }
 exit(1);
 }
-
-int setupinterrupt(void) {
-struct sigaction act;
-act.sa_handler = myhandler;
-act.sa_flags = 0;
-return sigaction(SIGPROF, &act, NULL);
-}
-
-
-int setupinterruptforSIGINT(void) {
-struct sigaction action;
-action.sa_handler = myhandler;
-action.sa_flags = 0;
-return sigaction(SIGINT, &action, NULL);
-}
-
-int setupitimer(void) {
-struct itimerval value;
-value.it_interval.tv_sec = 2;
-value.it_interval.tv_usec = 0;
-value.it_value = value.it_interval;
-return (setitimer(ITIMER_PROF, &value, NULL));
-}
-
-
 
 int main (int argc, char *argv[]) {
 
@@ -89,7 +72,7 @@ while((x = getopt(argc,argv, "hn:s:")) != -1)
 switch(x)
 {
 case 'h':
-        fprintf(stderr, "Usage: %s -n processes -h [help] -s children to exist in the system at the same time \n", argv[0]);
+        fprintf(stderr, "Usage: %s -n processCount -h [help] -s childrenCount\n", argv[0]);
         return 1;
 case 'n':
         n = atoi(optarg);
@@ -104,7 +87,7 @@ case '?':
 
 if(s>n)
 {
-fprintf(stderr,  "Illegal COmmand Line Arguments..s cannot be  than n. \n", s ,n );
+fprintf(stderr,  "Illegal COmmand Line Arguments..s cannot be greater  than n. \n", s ,n );
 return 1;
 }
 if(n> 20)
@@ -115,21 +98,7 @@ n = 20;
 }
 
 
-if (setupitimer() == -1) {
-perror("Failed to set up the ITIMER_PROF interval timer");
-return 1;
-}
-
-if (setupinterrupt() == -1) {
-perror("Failed to set up handler for SIGPROF");
-return 1;
-}
-
-if (setupinterruptforSIGINT() == -1) {
-perror("Failed to set up handler for SIGINT");
-return 1;
-}
-
+signal(SIGINT, myhandler);	
 signal(SIGALRM, myhandler);
 alarm(2);
 
@@ -142,75 +111,61 @@ if(shmId <0 )
 	exit(1);
 }
 
-shmPtr = (shared_mem*) shmat(shmId, NULL, 0);
-//fprintf(stderr, "Shared Memory id in master %d \n", shmId);
-
-if(shmPtr == (void *) -1)
+clock = (shared_mem*) shmat(shmId, NULL, 0);
+if(clock == (void *) -1)
 {
 	perror("Error in attaching shared memory --- Master \n");
 	exit(1);
 }
 
-//fprintf(stderr, "Allocated shared memory \n");
-shmPtr -> seconds = 0;
-//fprintf(stderr, "After seconds \n");
-shmPtr -> milliseconds = 0;
+clock -> seconds = 0;
+clock -> milliseconds = 0;
 
 int childCount = n;
-//fprintf(stderr, "Timer Set \n");
-pids = (pid_t *)malloc(n * sizeof(int)); ;
-//waitpid(-1, &status, 0);
+child_pids = (pid_t *)malloc(n * sizeof(int));
 	for(i=0; i<s ;i++)
 	{
-		pids[i] = fork();
-		if(pids[i] == 0)
+		child_pids[i] = fork();
+		if(child_pids[i] == 0)
 		{
-		fprintf(stderr, "Child Forked %d \n" , j);
-		char command1[50], command2[50], command3[50];
-		//char *i_val = "-i";
+		char argument1[50], argument2[50], argument3[50];
 		char *s_val = "-s";
 		char *k_val = "-n";
 		char *shmid;
-		char *temp[] = {NULL,k_val,command2 ,s_val, command3, NULL};
-		temp[0]="./worker";
-		//sprintf(temp[2],"%d", i);
-		sprintf(temp[2], "%d", n);
-		sprintf(temp[4], "%d", shmId);
-		execv("./worker", temp);
+		char *arguments[] = {NULL,k_val,argument2 ,s_val, argument3, NULL};
+		arguments[0]="./worker";
+		sprintf(arguments[2], "%d", n);
+		sprintf(arguments[4], "%d", shmId);
+		execv("./worker", arguments);
 		fprintf(stderr, "Error in exec");
 		}	
 	j++;
 	}
+	
 	waitpid(-1, &status, 0);
 	while(j < childCount)
 	{
 	//sleep(1);
-	fprintf(stderr, "Child Forked %d \n" , j);
          waitpid(-1, &status, 0);
-	 pids[j] = fork();
-         if(pids[j] == 0)
+	 child_pids[j] = fork();
+         if(child_pids[j] == 0)
          {
 	char ival[10], nval[50],sval[50];
          char *s_val2 = "-s";
          char *k_val2 = "-n";
          char *j = j;
-	char *temp2[] = {NULL,k_val2,nval ,s_val2, sval, NULL};
-	 temp2[0]="./worker";
-         sprintf(temp2[2], "%d", n);
-         sprintf(temp2[4], "%d", shmId);
-         execv("./worker", temp2);
+	char *arguments2[] = {NULL,k_val2,nval ,s_val2, sval, NULL};
+	 arguments2[0]="./worker";
+         sprintf(arguments2[2], "%d", n);
+         sprintf(arguments2[4], "%d", shmId);
+         execv("./worker", arguments2);
          fprintf(stderr, "Error in exec");
 	}
        	j++;
 	}
 
-while((waitpid(-1, &status, 0) > 0 ))
-{};
-fprintf(stderr, "Master Clock Value Seconds %d, Milliseconds %d \n", shmPtr -> seconds, shmPtr -> milliseconds);
-shmdt((void *)shmPtr);
-fprintf(stderr, "Server has detached its shared memory \n");
-shmctl(shmId, IPC_RMID, NULL);
-fprintf(stderr, "Server has removed its shared memory \n");
+while((waitpid(-1, &status, 0) > 0 )){};
+clearSharedMemory();
 return 0;
 }
 

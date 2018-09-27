@@ -1,0 +1,20 @@
+bachina@hoare7 bachina.2]$ git log
+commit 26f186c999a634bd80c58ff6e317ce0cd6e0deb1
+Author: siva bachina <bachina@hoare7.cs.umsl.edu>
+Date:   Wed Sep 26 14:38:56 2018 -0500
+
+    Changes in Master and Worker
+
+commit e08181a5dde9124e0506dd4b3be55fe624a7f93c
+Author: siva bachina <bachina@hoare7.cs.umsl.edu>
+Date:   Mon Sep 24 19:29:37 2018 -0500
+
+    Second commit
+
+commit 70767363b6bdac812c2484c64ebf2f3f70fe13bc
+Author: siva bachina <bachina@hoare7.cs.umsl.edu>
+Date:   Sat Sep 22 10:43:19 2018 -0500
+
+    first commit
+[bachina@hoare7 bachina.2]$
+
